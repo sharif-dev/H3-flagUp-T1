@@ -2,16 +2,13 @@ package com.example.weatherforecast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,11 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Button button_start_thread;
     private EditText editText; //edit text that contains the input text
-    private String json_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+//    private String json_url;
     private RequestQueue mQueue;
     private Handler mainHandler = new Handler();
     private ListView myListView;    //it shows the cities found
-    private ArrayList<String> Items = new ArrayList<String>();
+    private ArrayList<String> cityItems = new ArrayList<String>();
+    private ArrayList<String> cityXY = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +68,13 @@ public class MainActivity extends AppCompatActivity {
     class GoRunnable implements Runnable{
         @Override
         public void run() {
+            String json_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
             json_url += editText.getText();     // text written in the edit text
             json_url += ".json?access_token=";  // finnishing the url
             json_url += "pk.eyJ1IjoiYWxpYXNoOTgiLCJhIjoiY2s4bjdmZHk4MG13bTNmcGU1c3ZmdmZudiJ9.WyMiEFZqNFeI2hxx68CHhg"; //token
             // string is now ready to use
-
+            cityItems.clear();
+            cityXY.clear();
             // Sending the query to the API
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, json_url, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -83,23 +83,15 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray jsonArray = response.getJSONArray("features");
                         for (int i = 0 ; i < jsonArray.length() ; i++){
                             JSONObject temp = jsonArray.getJSONObject(i);
-                            final String place = temp.getString("place_name");
-                            String coordination = temp.getString("center");
-                            Items.add(place);
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, Items);
-                                    myListView.setAdapter(adapter);
-                                    // the city name and coordination gets into the ListView
-                                }
-                            });
-
-                            try {
-                                Thread.sleep(1500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            String place = temp.getString("place_name");
+                            String XY = temp.getString("center");
+                            cityItems.add(place);
+                            cityXY.add(XY);
+//                            try {
+//                                Thread.sleep(1500);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
 //                            Log.d(TAG, place);
 //                            Log.d(TAG, coordination);
                         }
@@ -114,7 +106,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             mQueue.add(jsonObjectRequest);
-
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, cityItems);
+                    myListView.setAdapter(adapter);
+                    // the city name and coordination gets into the ListView
+                }
+            });
         }
     }
 

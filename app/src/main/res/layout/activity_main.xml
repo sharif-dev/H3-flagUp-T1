@@ -30,8 +30,8 @@
 
     <ListView
         android:id="@+id/listview"
-        android:layout_width="250dp"
-        android:layout_height="346dp"
+        android:layout_width="323dp"
+        android:layout_height="350dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputText" />
