@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -22,6 +24,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -30,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private String json_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
     private RequestQueue mQueue;
     private Handler mainHandler = new Handler();
-
+    private ListView myListView;    //it shows the cities found
+    private ArrayList<String> Items = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         button_start_thread = findViewById(R.id.go_btn);
         editText = findViewById(R.id.inputText);
         mQueue = Volley.newRequestQueue(this);
+        myListView = findViewById(R.id.listview);
 
         button_start_thread.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 GoRunnable goRunnable = new GoRunnable();
                 Thread goThread = new Thread(goRunnable);
                 goThread.start();
+
+
             }
         });
 
@@ -77,11 +85,13 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject temp = jsonArray.getJSONObject(i);
                             final String place = temp.getString("place_name");
                             String coordination = temp.getString("center");
-
+                            Items.add(place);
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                // the city name and coordination should get into the recyclerView
+                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, Items);
+                                    myListView.setAdapter(adapter);
+                                    // the city name and coordination gets into the ListView
                                 }
                             });
 

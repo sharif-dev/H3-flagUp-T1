@@ -28,12 +28,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="359dp"
-        android:layout_height="510dp"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/go_btn"
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="250dp"
+        android:layout_height="346dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputText" />
