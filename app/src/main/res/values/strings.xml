@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">WeatherForecast</string>
+    <string name="app_name">Weather Forecast</string>
+    <string name="mapbox_api_url">https://api.mapbox.com/geocoding/v5/mapbox.places/%1$s.json?access_token=pk.eyJ1IjoiYWxpYXNoOTgiLCJhIjoiY2s4bjdmZHk4MG13bTNmcGU1c3ZmdmZudiJ9.WyMiEFZqNFeI2hxx68CHhg</string>
 </resources>

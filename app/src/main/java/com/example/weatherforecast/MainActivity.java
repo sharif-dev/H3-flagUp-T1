@@ -2,6 +2,7 @@ package com.example.weatherforecast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -48,30 +49,20 @@ public class MainActivity extends AppCompatActivity {
         button_start_thread.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-//               startActivity(new Intent(MainActivity.this, SecondPageAcitivity.class));
-
+//              startActivity(new Intent(MainActivity.this, SecondPageActivity.class));
                 GoRunnable goRunnable = new GoRunnable();
                 Thread goThread = new Thread(goRunnable);
                 goThread.start();
-
-
             }
         });
-
-
     }
-
 
     //Thread that handles the communication with MapBox API
     class GoRunnable implements Runnable{
         @Override
         public void run() {
-            String json_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-            json_url += editText.getText();     // text written in the edit text
-            json_url += ".json?access_token=";  // finnishing the url
-            json_url += "pk.eyJ1IjoiYWxpYXNoOTgiLCJhIjoiY2s4bjdmZHk4MG13bTNmcGU1c3ZmdmZudiJ9.WyMiEFZqNFeI2hxx68CHhg"; //token
+            String json_url = getString(R.string.mapbox_api_url, editText.getText());
+            // text written in the edit text
             // string is now ready to use
             cityItems.clear();
             cityXY.clear();
@@ -109,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, cityItems);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                            android.R.layout.simple_list_item_1, cityItems);
                     myListView.setAdapter(adapter);
                     // the city name and coordination gets into the ListView
                 }
