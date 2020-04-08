@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Weather Forecast</string>
     <string name="mapbox_api_url">https://api.mapbox.com/geocoding/v5/mapbox.places/%1$s.json?access_token=pk.eyJ1IjoiYWxpYXNoOTgiLCJhIjoiY2s4bjdmZHk4MG13bTNmcGU1c3ZmdmZudiJ9.WyMiEFZqNFeI2hxx68CHhg</string>
+    <string name="weather_api_url">http://api.weatherapi.com/v1/forecast.json?q={%1$s,%2$s}&amp;key={0fe8b5fd7a77401f8c0211741200804}&amp;days={3}</string>
 </resources>

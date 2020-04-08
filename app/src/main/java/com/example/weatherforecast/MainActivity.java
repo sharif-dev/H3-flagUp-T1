@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,19 +74,14 @@ public class MainActivity extends AppCompatActivity {
                 public void onResponse(JSONObject response) {
                     try {
                         JSONArray jsonArray = response.getJSONArray("features");
+                        cityItems.clear();
+                        cityXY.clear();
                         for (int i = 0 ; i < jsonArray.length() ; i++){
                             JSONObject temp = jsonArray.getJSONObject(i);
                             String place = temp.getString("place_name");
                             String XY = temp.getString("center");
                             cityItems.add(place);
                             cityXY.add(XY);
-//                            try {
-//                                Thread.sleep(1500);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                            Log.d(TAG, place);
-//                            Log.d(TAG, coordination);
                         }
                     }catch (JSONException e){
                         e.printStackTrace();
@@ -103,6 +100,14 @@ public class MainActivity extends AppCompatActivity {
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
                             android.R.layout.simple_list_item_1, cityItems);
                     myListView.setAdapter(adapter);
+                    myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(MainActivity.this, SecondPageActivity.class);
+                            intent.putExtra("XY", cityXY.get(position));
+                            MainActivity.this.startActivity(intent);
+                        }
+                    });
                     // the city name and coordination gets into the ListView
                 }
             });
