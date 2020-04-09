@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 					Thread goThread = new Thread(goRunnable);
 					goThread.start();
 				} else {
-					Toast.makeText(MainActivity.this, "No Internet", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, getApplicationContext().getResources().getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
 					Intent intent = new Intent(MainActivity.this, SecondPageActivity.class);
 					intent.putExtra("loadPrevious", true);
 					MainActivity.this.startActivity(intent);
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onErrorResponse(VolleyError error) {
 					error.printStackTrace();
-					Toast.makeText(MainActivity.this, "Error in getting response", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, getApplicationContext().getResources().getString(R.string.response_error), Toast.LENGTH_SHORT).show();
 					mainHandler.post(new Runnable() {
 						@Override
 						public void run() {
