@@ -47,7 +47,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
 		Context context = holder.weatherCondition.getContext();
 		int id = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
 		holder.weatherCondition.setImageResource(id);
-		holder.temperature.setText(condition.getTempC() + "");
+		holder.temperature.setText(Math.round(condition.getTempC()) + "");
 	}
 
 	@Override
