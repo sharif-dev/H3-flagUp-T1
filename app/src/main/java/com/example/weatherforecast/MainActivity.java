@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -75,12 +76,24 @@ public class MainActivity extends AppCompatActivity {
 	class GoRunnable implements Runnable {
 		@Override
 		public void run() {
+			mainHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					ProgressBar progressBar = findViewById(R.id.progressBar);
+					progressBar.setVisibility(View.VISIBLE);
+				}
+			});
 			String json_url = getString(R.string.mapbox_api_url, editText.getText());
 			// text written in the edit text
 			// string is now ready to use
 			cityItems.clear();
 			cityXY.clear();
 			// Sending the query to the API
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
 			JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, json_url, null, new Response.Listener<JSONObject>() {
 				@Override
@@ -104,12 +117,22 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onErrorResponse(VolleyError error) {
 					error.printStackTrace();
+					Toast.makeText(MainActivity.this, "Error in getting response", Toast.LENGTH_SHORT).show();
+					mainHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							ProgressBar progressBar = findViewById(R.id.progressBar);
+							progressBar.setVisibility(View.INVISIBLE);
+						}
+					});
 				}
 			});
 			mQueue.add(jsonObjectRequest);
 			mainHandler.post(new Runnable() {
 				@Override
 				public void run() {
+					ProgressBar progressBar = findViewById(R.id.progressBar);
+					progressBar.setVisibility(View.INVISIBLE);
 					ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
 							android.R.layout.simple_list_item_1, cityItems);
 					myListView.setAdapter(adapter);
