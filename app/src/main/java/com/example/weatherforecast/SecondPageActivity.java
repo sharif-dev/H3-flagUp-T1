@@ -40,6 +40,8 @@ public class SecondPageActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_second_page_activity);
+		ConstraintLayout info = findViewById(R.id.weather_info);
+		info.setVisibility(View.INVISIBLE);
 		Intent intent = getIntent();
 		String text = intent.getStringExtra("XY");
 		String[] parts = text.split(",");
@@ -99,7 +101,7 @@ public class SecondPageActivity extends AppCompatActivity {
 							@Override
 							public void run() {
 								TextView cityName = findViewById(R.id.cityName);
-								cityName.setText(name + ", " + country);
+								cityName.setText(String.format("%s, %s, %s", name, region, country));
 								ProgressBar pb = findViewById(R.id.progressBar);
 								pb.setVisibility(View.INVISIBLE);
 								ConstraintLayout info = findViewById(R.id.weather_info);
@@ -111,8 +113,15 @@ public class SecondPageActivity extends AppCompatActivity {
 								String imageName = (currentCondition.isDay() ? "d" : "n") + currentCondition.getConditionCode();
                                 conditionImage.setImageResource(conditionImage.getContext().getResources()
                                         .getIdentifier(imageName, "drawable", conditionImage.getContext().getPackageName()));
-								// the city name and coordination gets into the ListView
-								info.setVisibility(View.VISIBLE);
+								TextView condition = findViewById(R.id.condition);
+								condition.setText(currentCondition.getConditionText());
+								TextView wind = findViewById(R.id.wind);
+								wind.setText(String.format("%.1f km/h", currentCondition.getWindKph()));
+								TextView humidity = findViewById(R.id.humidity);
+								humidity.setText(String.format("%d%%", currentCondition.getHumidity()));
+								TextView pressure = findViewById(R.id.pressure);
+								pressure.setText(String.format("%.1f mb", currentCondition.getPressureMb()));
+                                info.setVisibility(View.VISIBLE);
 							}
 						});
 					} catch (JSONException e) {
