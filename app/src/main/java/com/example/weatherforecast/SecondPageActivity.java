@@ -80,7 +80,6 @@ public class SecondPageActivity extends AppCompatActivity {
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 	private WeatherCondition[] forecastedConditions = new WeatherCondition[NUMBER_OF_DAYS];
-	private JSONObject lastForecast;
 	private Gson gson = new Gson();
 	private boolean loadPrevious;
 	File dataPath, dataFile;
@@ -194,7 +193,6 @@ public class SecondPageActivity extends AppCompatActivity {
 						JSONArray forecasts = response.getJSONObject("forecast").getJSONArray("forecastday");
 						for (int i = 0; i < forecasts.length(); i++) {
 							JSONObject forecast = forecasts.getJSONObject(i);
-							lastForecast = forecast;
 							JSONObject weather = forecast.getJSONObject("day");
 							forecastedConditions[i] = new WeatherCondition.Builder()
 									.withTimestamp(forecast.getLong("date_epoch"))

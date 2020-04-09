@@ -32,11 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-	private static final String TAG = "MainActivity";
-	private Button button_start_thread;
 	private EditText editText; //edit text that contains the input text
-	//    private String json_url;
 	private RequestQueue mQueue;
 	private Handler mainHandler = new Handler();
 	private ListView myListView;    //it shows the cities found
@@ -48,9 +44,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-
 		// check internet connection
-		button_start_thread = findViewById(R.id.go_btn);
+		Button button_start_thread = findViewById(R.id.go_btn);
 		editText = findViewById(R.id.inputText);
 		mQueue = Volley.newRequestQueue(this);
 		myListView = findViewById(R.id.listview);
@@ -147,16 +142,14 @@ public class MainActivity extends AppCompatActivity {
 					});
 				}
 			});
-
-
 		}
 	}
 
 	private boolean isNetworkConnected(Context context) {
-		ConnectivityManager cm =
+		ConnectivityManager connectivityManager =
 				(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
 		boolean isConnected = activeNetwork != null &&
 				activeNetwork.isConnectedOrConnecting();
 		return isConnected;
