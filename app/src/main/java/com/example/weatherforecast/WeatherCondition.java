@@ -1,5 +1,9 @@
 package com.example.weatherforecast;
 
+import android.util.Log;
+
+import java.text.SimpleDateFormat;
+
 public class WeatherCondition {
 	private double tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF;
 	private int humidity, conditionCode;
@@ -175,11 +179,27 @@ public class WeatherCondition {
 		return timestamp;
 	}
 
+	public String getImageName()
+	{
+		return (isDay ? "d" : "n") + conditionCode;
+	}
+	public String getWeekDay()
+	{
+		return (new SimpleDateFormat("EEEE")).format(timestamp * 1000);
+	}
+
 	public String getConditionText() {
 		return conditionText;
 	}
 
 	public boolean isDay() {
 		return isDay;
+	}
+
+	public static String getIconName(String url)
+	{
+		String[] iconSplitted = url.split("/");
+		String[] icons = iconSplitted[iconSplitted.length - 1].split("\\.");
+		return icons[0];
 	}
 }

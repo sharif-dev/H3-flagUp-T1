@@ -2,6 +2,8 @@ package com.example.weatherforecast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -33,7 +35,10 @@ public class SecondPageActivity extends AppCompatActivity {
 	private String latitude;
 	private String name, region, country;
 	private WeatherCondition currentCondition;
-	private final int NUMBER_OF_DAYS = 3;
+	private final int NUMBER_OF_DAYS = 7;
+	private RecyclerView recyclerView;
+	private RecyclerView.Adapter mAdapter;
+	private RecyclerView.LayoutManager layoutManager;
 	private WeatherCondition[] forecastedConditions = new WeatherCondition[NUMBER_OF_DAYS];
 
 	@Override
@@ -48,6 +53,10 @@ public class SecondPageActivity extends AppCompatActivity {
 		longitude = parts[0].substring(1);
 		latitude = parts[1].substring(0, parts[1].length() - 1);
 		mQueue = Volley.newRequestQueue(this);
+		recyclerView = findViewById(R.id.forecastRecyclerView);
+		layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+		recyclerView.setLayoutManager(layoutManager);
+
 		WeatherRunnable weatherRunnable = new WeatherRunnable();
 		Thread weatherThread = new Thread(weatherRunnable);
 		weatherThread.start();
@@ -65,15 +74,13 @@ public class SecondPageActivity extends AppCompatActivity {
 						region = response.getJSONObject("location").getString("region");
 						country = response.getJSONObject("location").getString("country");
 						final JSONObject currentTemp = response.getJSONObject("current");
-						String[] iconSplitted = currentTemp.getJSONObject("condition").getString("icon").split("/");
-						String[] icons = iconSplitted[iconSplitted.length - 1].split("\\.");
-						String icon = icons[0];
 						currentCondition = new WeatherCondition.Builder()
 								.withTempC(currentTemp.getDouble("temp_c"))
 								.withTempF(currentTemp.getDouble("temp_f"))
 								.withIsDay(currentTemp.getInt("is_day") != 0)
 								.withConditionText(currentTemp.getJSONObject("condition").getString("text"))
-								.withConditionCode(Integer.parseInt(icon))
+								.withConditionCode(Integer.parseInt(WeatherCondition.getIconName(currentTemp.getJSONObject("condition")
+									.getString("icon"))))
 								.withWindKph(currentTemp.getDouble("wind_kph"))
 								.withPressureMb(currentTemp.getDouble("pressure_mb"))
 								.withPrecipMm(currentTemp.getDouble("precip_mm"))
@@ -93,7 +100,8 @@ public class SecondPageActivity extends AppCompatActivity {
 									.withMinTempF(weather.getDouble("mintemp_f"))
 									.withTempC(weather.getDouble("avgtemp_c"))
 									.withTempF(weather.getDouble("avgtemp_f"))
-									.withConditionCode(weather.getJSONObject("condition").getInt("code"))
+									.withConditionCode(Integer.parseInt(WeatherCondition.getIconName(weather.getJSONObject("condition")
+											.getString("icon"))))
 									.withConditionText(weather.getJSONObject("condition").getString("text"))
 									.build();
 						}
@@ -110,7 +118,7 @@ public class SecondPageActivity extends AppCompatActivity {
 								tempC.setText(Long.toString(Math.round(currentCondition.getTempC())));
 								tempF.setText(Long.toString(Math.round(currentCondition.getTempF())));
 								ImageView conditionImage = findViewById(R.id.conditionImage);
-								String imageName = (currentCondition.isDay() ? "d" : "n") + currentCondition.getConditionCode();
+								String imageName = currentCondition.getImageName();
                                 conditionImage.setImageResource(conditionImage.getContext().getResources()
                                         .getIdentifier(imageName, "drawable", conditionImage.getContext().getPackageName()));
 								TextView condition = findViewById(R.id.condition);
@@ -121,6 +129,8 @@ public class SecondPageActivity extends AppCompatActivity {
 								humidity.setText(String.format("%d%%", currentCondition.getHumidity()));
 								TextView pressure = findViewById(R.id.pressure);
 								pressure.setText(String.format("%.1f mb", currentCondition.getPressureMb()));
+								mAdapter = new WeatherAdapter(forecastedConditions);
+								recyclerView.setAdapter(mAdapter);
                                 info.setVisibility(View.VISIBLE);
 							}
 						});
