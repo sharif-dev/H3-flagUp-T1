@@ -43,7 +43,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 		WeatherCondition condition = weathers[position];
 		holder.weekDay.setText(condition.getWeekDay());
-		String imageName = condition.getImageName();
+		String imageName = condition.getImageNameDay();
 		Context context = holder.weatherCondition.getContext();
 		int id = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
 		holder.weatherCondition.setImageResource(id);

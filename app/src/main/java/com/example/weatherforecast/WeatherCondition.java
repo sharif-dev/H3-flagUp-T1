@@ -183,6 +183,12 @@ public class WeatherCondition {
 	{
 		return (isDay ? "d" : "n") + conditionCode;
 	}
+
+	public String getImageNameDay()
+	{
+		return "d" + conditionCode;
+	}
+
 	public String getWeekDay()
 	{
 		return (new SimpleDateFormat("EEEE")).format(timestamp * 1000);
