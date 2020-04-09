@@ -1,12 +1,13 @@
 package com.example.weatherforecast;
 
 public class WeatherCondition {
-	private float tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF;
+	private double tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF;
 	private int humidity, conditionCode;
 	private long timestamp;
+	private String conditionText;
 	private boolean isDay;
 
-	public WeatherCondition(float tempC, float tempF, float feelsLikeC, float windKph, float pressureMb, float precipMm, float uv, float maxTempC, float maxTempF, float minTempC, float minTempF, int humidity, int conditionCode, long timestamp, boolean isDay) {
+	public WeatherCondition(double tempC, double tempF, double feelsLikeC, double windKph, double pressureMb, double precipMm, double uv, double maxTempC, double maxTempF, double minTempC, double minTempF, int humidity, int conditionCode, long timestamp, boolean isDay, String conditionText) {
 		this.tempC = tempC;
 		this.tempF = tempF;
 		this.feelsLikeC = feelsLikeC;
@@ -22,65 +23,67 @@ public class WeatherCondition {
 		this.conditionCode = conditionCode;
 		this.timestamp = timestamp;
 		this.isDay = isDay;
+		this.conditionText = conditionText;
 	}
 
 	static class Builder
 	{
-		private float tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF;
+		private double tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF;
 		private int humidity, conditionCode;
 		private long timestamp;
+		private String conditionText;
 		private boolean isDay;
-		Builder withTempC(float temp)
+		Builder withTempC(double temp)
 		{
 			tempC = temp;
 			return this;
 		}
-		Builder withTempF(float temp)
+		Builder withTempF(double temp)
 		{
 			tempF = temp;
 			return this;
 		}
-		Builder withFeelsLikeC(float temp)
+		Builder withFeelsLikeC(double temp)
 		{
 			feelsLikeC = temp;
 			return this;
 		}
-		Builder withWindKph(float wind)
+		Builder withWindKph(double wind)
 		{
 			windKph = wind;
 			return this;
 		}
-		Builder withPressureMb(float pressure)
+		Builder withPressureMb(double pressure)
 		{
 			pressureMb = pressure;
 			return this;
 		}
-		Builder withPrecipMm(float precip)
+		Builder withPrecipMm(double precip)
 		{
 			precipMm = precip;
 			return this;
 		}
-		Builder withUv(float uv)
+		Builder withUv(double uv)
 		{
 			this.uv = uv;
 			return this;
 		}
-		Builder withMaxTempC(float temp)
+		Builder withMaxTempC(double temp)
 		{
 			maxTempC = temp;
 			return this;
 		}
-		Builder withMinTempC(float temp)
+		Builder withMinTempC(double temp)
 		{
 			minTempC = temp;
 			return this;
 		}
-		Builder withMaxTempF(float temp)
+		Builder withMaxTempF(double temp)
 		{
 			maxTempF = temp;
 			return this;
 		}
-		Builder withMinTempF(float temp)
+		Builder withMinTempF(double temp)
 		{
 			minTempF = temp;
 			return this;
@@ -105,9 +108,78 @@ public class WeatherCondition {
 			isDay = day;
 			return this;
 		}
+		Builder withConditionText(String text)
+		{
+			conditionText = text;
+			return this;
+		}
 		WeatherCondition build()
 		{
-			return new WeatherCondition(tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF, humidity, conditionCode, timestamp, isDay);
+			return new WeatherCondition(tempC, tempF, feelsLikeC, windKph, pressureMb, precipMm, uv, maxTempC, maxTempF, minTempC, minTempF, humidity, conditionCode, timestamp, isDay, conditionText);
 		}
+	}
+
+	public double getTempC() {
+		return tempC;
+	}
+
+	public double getTempF() {
+		return tempF;
+	}
+
+	public double getFeelsLikeC() {
+		return feelsLikeC;
+	}
+
+	public double getWindKph() {
+		return windKph;
+	}
+
+	public double getPressureMb() {
+		return pressureMb;
+	}
+
+	public double getPrecipMm() {
+		return precipMm;
+	}
+
+	public double getUv() {
+		return uv;
+	}
+
+	public double getMaxTempC() {
+		return maxTempC;
+	}
+
+	public double getMaxTempF() {
+		return maxTempF;
+	}
+
+	public double getMinTempC() {
+		return minTempC;
+	}
+
+	public double getMinTempF() {
+		return minTempF;
+	}
+
+	public int getHumidity() {
+		return humidity;
+	}
+
+	public int getConditionCode() {
+		return conditionCode;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public String getConditionText() {
+		return conditionText;
+	}
+
+	public boolean isDay() {
+		return isDay;
 	}
 }

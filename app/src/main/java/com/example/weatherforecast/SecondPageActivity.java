@@ -1,14 +1,15 @@
 package com.example.weatherforecast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -16,10 +17,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class SecondPageActivity extends AppCompatActivity {
     private RequestQueue mQueue;
@@ -36,11 +39,14 @@ public class SecondPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second_page_activity);
         Intent intent = getIntent();
-        TextView textView = findViewById(R.id.textView);
         String text = intent.getStringExtra("XY");
         String[] parts = text.split(",");
         longitude = parts[0].substring(1);
         latitude = parts[1].substring(0,parts[1].length() - 1);
+        mQueue = Volley.newRequestQueue(this);
+        WeatherRunnable weatherRunnable = new WeatherRunnable();
+        Thread weatherThread = new Thread(weatherRunnable);
+        weatherThread.start();
     }
 
     class WeatherRunnable implements Runnable{
@@ -49,8 +55,61 @@ public class SecondPageActivity extends AppCompatActivity {
             String json_url = getString(R.string.weather_api_url, latitude, longitude);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, json_url, null, new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(JSONObject response) {
-
+                public void onResponse(final JSONObject response) {
+                    try {
+                        name = response.getJSONObject("location").getString("name");
+                        region = response.getJSONObject("location").getString("region");
+                        country = response.getJSONObject("location").getString("country");
+                        final JSONObject currentTemp = response.getJSONObject("current");
+                        currentCondition = new WeatherCondition.Builder()
+                                .withTempC(currentTemp.getDouble("temp_c"))
+                                .withTempF(currentTemp.getDouble("temp_f"))
+                                .withIsDay(currentTemp.getInt("is_day") != 0)
+                                .withConditionText(currentTemp.getJSONObject("condition").getString("text"))
+                                .withConditionCode(currentTemp.getJSONObject("condition").getInt("code"))
+                                .withWindKph(currentTemp.getDouble("wind_kph"))
+                                .withPressureMb(currentTemp.getDouble("pressure_mb"))
+                                .withPrecipMm(currentTemp.getDouble("precip_mm"))
+                                .withHumidity(currentTemp.getInt("humidity"))
+                                .withFeelsLikeC(currentTemp.getDouble("feelslike_c"))
+                                .withUv(currentTemp.getDouble("uv"))
+                                .build();
+                        JSONArray forecasts = response.getJSONObject("forecast").getJSONArray("forecastday");
+                        for (int i = 0; i < forecasts.length(); i++)
+                        {
+                            JSONObject forecast = forecasts.getJSONObject(i);
+                            JSONObject weather = forecast.getJSONObject("day");
+                            forecastedConditions[i] = new WeatherCondition.Builder()
+                                    .withTimestamp(forecast.getLong("date_epoch"))
+                                    .withMaxTempC(weather.getDouble("maxtemp_c"))
+                                    .withMaxTempF(weather.getDouble("maxtemp_f"))
+                                    .withMinTempC(weather.getDouble("mintemp_c"))
+                                    .withMinTempF(weather.getDouble("mintemp_f"))
+                                    .withTempC(weather.getDouble("avgtemp_c"))
+                                    .withTempF(weather.getDouble("avgtemp_f"))
+                                    .withConditionCode(weather.getJSONObject("condition").getInt("code"))
+                                    .withConditionText(weather.getJSONObject("condition").getString("text"))
+                                    .build();
+                        }
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView cityName = findViewById(R.id.cityName);
+                                cityName.setText(name+", "+country);
+                                ProgressBar pb = findViewById(R.id.progressBar);
+                                pb.setVisibility(View.INVISIBLE);
+                                ConstraintLayout info = findViewById(R.id.weather_info);
+                                TextView tempC = findViewById(R.id.tempC);
+                                TextView tempF = findViewById(R.id.tempF);
+                                tempC.setText(Long.toString(Math.round(currentCondition.getTempC())));
+                                tempF.setText(Long.toString(Math.round(currentCondition.getTempF())));
+                                // the city name and coordination gets into the ListView
+                                info.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -59,11 +118,7 @@ public class SecondPageActivity extends AppCompatActivity {
                 }
             });
             mQueue.add(jsonObjectRequest);
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                }
-            });
+
         }
     }
 }
