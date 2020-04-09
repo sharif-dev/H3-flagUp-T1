@@ -7,4 +7,5 @@
     <string name="data_json_url">weather_data.json</string>
     <string name="response_error">Error in getting response</string>
     <string name="no_internet_error">No Internet</string>
+    <string name="no_json_file">No Recent Results Found</string>
 </resources>

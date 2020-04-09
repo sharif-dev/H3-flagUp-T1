@@ -8,11 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.JsonReader;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 
 public class SecondPageActivity extends AppCompatActivity {
@@ -112,6 +112,7 @@ public class SecondPageActivity extends AppCompatActivity {
 	class WeatherRunnable implements Runnable {
 		@Override
 		public void run() {
+			Looper.prepare();
 			if (!loadPrevious)
 				sendRequest();
 			else
@@ -129,6 +130,7 @@ public class SecondPageActivity extends AppCompatActivity {
 				country = data.getCountry();
 				render();
 			} catch (FileNotFoundException e) {
+				Toast.makeText(SecondPageActivity.this, getApplicationContext().getResources().getString(R.string.no_json_file), Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
 		}
@@ -221,6 +223,7 @@ public class SecondPageActivity extends AppCompatActivity {
 			}, new Response.ErrorListener() {
 				@Override
 				public void onErrorResponse(VolleyError error) {
+					Toast.makeText(SecondPageActivity.this, getApplicationContext().getResources().getString(R.string.response_error), Toast.LENGTH_SHORT).show();
 					error.printStackTrace();
 				}
 			});

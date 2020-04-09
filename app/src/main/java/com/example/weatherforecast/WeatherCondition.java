@@ -1,7 +1,5 @@
 package com.example.weatherforecast;
 
-import android.util.Log;
-
 import java.text.SimpleDateFormat;
 
 public class WeatherCondition {
