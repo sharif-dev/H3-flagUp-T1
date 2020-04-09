@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 		editText = findViewById(R.id.inputText);
 		mQueue = Volley.newRequestQueue(this);
 		myListView = findViewById(R.id.listview);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+				android.R.layout.simple_list_item_1, cityItems);
+		myListView.setAdapter(adapter);
 
 		button_start_thread.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 							cityItems.add(place);
 							cityXY.add(XY);
 						}
+						myListView.invalidateViews();
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -128,9 +132,6 @@ public class MainActivity extends AppCompatActivity {
 				public void run() {
 					ProgressBar progressBar = findViewById(R.id.progressBar);
 					progressBar.setVisibility(View.INVISIBLE);
-					ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
-							android.R.layout.simple_list_item_1, cityItems);
-					myListView.setAdapter(adapter);
 					myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 						@Override
 						public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
