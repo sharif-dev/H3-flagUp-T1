@@ -26,6 +26,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class SecondPageActivity extends AppCompatActivity {
 	private RequestQueue mQueue;
 	private Handler mainHandler = new Handler();
@@ -35,6 +41,7 @@ public class SecondPageActivity extends AppCompatActivity {
 	private WeatherCondition currentCondition;
 	private final int NUMBER_OF_DAYS = 3;
 	private WeatherCondition[] forecastedConditions = new WeatherCondition[NUMBER_OF_DAYS];
+	private JSONObject lastForcast;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +91,7 @@ public class SecondPageActivity extends AppCompatActivity {
 						JSONArray forecasts = response.getJSONObject("forecast").getJSONArray("forecastday");
 						for (int i = 0; i < forecasts.length(); i++) {
 							JSONObject forecast = forecasts.getJSONObject(i);
+							lastForcast = forecast;
 							JSONObject weather = forecast.getJSONObject("day");
 							forecastedConditions[i] = new WeatherCondition.Builder()
 									.withTimestamp(forecast.getLong("date_epoch"))
@@ -97,6 +105,27 @@ public class SecondPageActivity extends AppCompatActivity {
 									.withConditionText(weather.getJSONObject("condition").getString("text"))
 									.build();
 						}
+
+//						//writing the file
+//
+//						FileOutputStream fos = null;
+//						try {
+//							fos = openFileOutput("myJSON.json", MODE_PRIVATE);
+//							fos.write(lastForcast.toString().getBytes());
+//						} catch (FileNotFoundException e) {
+//							e.printStackTrace();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						} finally {
+//							if (fos != null) {
+//								try {
+//									fos.close();
+//								} catch (IOException e) {
+//									e.printStackTrace();
+//								}
+//							}
+//						}
+
 						mainHandler.post(new Runnable() {
 							@Override
 							public void run() {
