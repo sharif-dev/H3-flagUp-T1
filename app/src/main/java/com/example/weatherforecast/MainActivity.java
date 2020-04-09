@@ -2,7 +2,10 @@ package com.example.weatherforecast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         button_start_thread.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 //              startActivity(new Intent(MainActivity.this, SecondPageActivity.class));
                 GoRunnable goRunnable = new GoRunnable();
                 Thread goThread = new Thread(goRunnable);
@@ -69,51 +75,71 @@ public class MainActivity extends AppCompatActivity {
             cityItems.clear();
             cityXY.clear();
             // Sending the query to the API
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, json_url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray jsonArray = response.getJSONArray("features");
-                        cityItems.clear();
-                        cityXY.clear();
-                        for (int i = 0 ; i < jsonArray.length() ; i++){
-                            JSONObject temp = jsonArray.getJSONObject(i);
-                            String place = temp.getString("place_name");
-                            String XY = temp.getString("center");
-                            cityItems.add(place);
-                            cityXY.add(XY);
+
+            if (isNetworkConnected(MainActivity.this)){      // checking the internet conncetion
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, json_url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("features");
+                            cityItems.clear();
+                            cityXY.clear();
+                            for (int i = 0 ; i < jsonArray.length() ; i++){
+                                JSONObject temp = jsonArray.getJSONObject(i);
+                                String place = temp.getString("place_name");
+                                String XY = temp.getString("center");
+                                cityItems.add(place);
+                                cityXY.add(XY);
+                            }
+                        }catch (JSONException e){
+                            e.printStackTrace();
                         }
-                    }catch (JSONException e){
-                        e.printStackTrace();
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
-            mQueue.add(jsonObjectRequest);
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
-                            android.R.layout.simple_list_item_1, cityItems);
-                    myListView.setAdapter(adapter);
-                    myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(MainActivity.this, SecondPageActivity.class);
-                            intent.putExtra("XY", cityXY.get(position));
-                            MainActivity.this.startActivity(intent);
-                        }
-                    });
-                    // the city name and coordination gets into the ListView
-                }
-            });
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+                mQueue.add(jsonObjectRequest);
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                                android.R.layout.simple_list_item_1, cityItems);
+                        myListView.setAdapter(adapter);
+                        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent intent = new Intent(MainActivity.this, SecondPageActivity.class);
+                                intent.putExtra("XY", cityXY.get(position));
+                                MainActivity.this.startActivity(intent);
+                            }
+                        });
+                        // the city name and coordination gets into the ListView
+                    }
+                });
+            } else {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //System.out.println("NO NET");
+                        //Toast.makeText(MainActivity.this, "Net", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
         }
     }
 
+    private boolean isNetworkConnected(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
 
 }
